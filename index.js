@@ -6,7 +6,7 @@ async function authorize() {
   const client = new JWT({
     email: keys.client_email,
     key: keys.private_key,
-    scopes: ['https://www.googleapis.com/auth/drive.metadata.readonly'],
+    scopes: ['https://www.googleapis.com/auth/drive'],
   });
   return client;
 }
@@ -19,16 +19,30 @@ async function listFiles(authClient) {
     fields: 'nextPageToken, files(id, name)',
   });
   let files = res.data.files;
+  // console.log("Res : " + JSON.stringify(res));
+  console.log("File Length: " + files.length);
   if (files.length === 0) {
     console.log('No files found.');
     return;
   }
   console.log("NextPageToken: " + res.data.nextPageToken);
   console.log('Files:');
-  files.map((file) => {
+  await Promise.all(files.map(async (file) => { // Use Promise.all to await all promises
+    if (!file.name.includes(".csv")) {
+      console.log("skipping: " + file.name);
+      return;
+    }
+    else {
+      console.log("Not skipping: " + file.name);
+    }
     console.log(`${file.name} (${file.id})`);
-  });
+    var fileTest = await drive.files.get({fileId: file.id, alt: 'media'});
 
+    // var fileTest = await drive.files.export({fileId: file.id, mimeType: 'text/plain'});
+    console.log("Contents: " + JSON.stringify(fileTest));
+    
+    console.log("test");
+  }));
   console.log("LOOPING");
 
   let nextPageToken = res.data.nextPageToken;
@@ -49,6 +63,8 @@ async function listFiles(authClient) {
     console.log('Files:');
     files.map((file) => {
       console.log(`${file.name} (${file.id})`);
+      console.log("test");
+      console.log("Props: " + JSON.stringify(file));
     });
   
   }
