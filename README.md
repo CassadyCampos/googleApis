@@ -1,6 +1,6 @@
 TODO List
 
-~~1. Figure out how to authorize API without consent screen (Maybe api key) ~~
+~~1. Figure out how to authorize API without consent screen (Maybe api key)~~
 ~~This text is strikethrough~~
 
 2. Learn how to download files
